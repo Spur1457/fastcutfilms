@@ -1,5 +1,12 @@
 /* Original Fast Cut Films background treatments recreated from the WordPress site. */
 
+/* Exact colors sampled from the original Fast Cut Films underline artwork. */
+:root {
+  --red: #FE6443;
+  --blue: #0179E8;
+  --green: #02E397;
+}
+
 /* Keep the header wordmark and its three-color underline as one lockup. */
 .brand {
   width: max-content;
@@ -50,6 +57,16 @@
 
 .hero-intro {
   color: rgba(255,255,255,.94);
+}
+
+/* The hero wordmark is inline-sized so the underline can exactly match it. */
+.hero-brand {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.hero-bars {
+  max-width: 100%;
 }
 
 /* The original site uses this edit-suite image as another full-width background,
