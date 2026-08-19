@@ -5,6 +5,17 @@ if (toggle && nav) {
   nav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => nav.classList.remove('open')));
 }
 
+const brand = document.querySelector('.brand');
+const brandText = brand?.querySelector('span:first-child');
+const brandBars = brand?.querySelector('.brand-bars');
+if (brandText && brandBars) {
+  const matchBrandWidth = () => {
+    brandBars.style.width = `${brandText.getBoundingClientRect().width}px`;
+  };
+  matchBrandWidth();
+  window.addEventListener('resize', matchBrandWidth);
+}
+
 const storyCopy = document.querySelector('.experience-item.accent-green p');
 if (storyCopy) {
   storyCopy.innerHTML = storyCopy.innerHTML.replace(
