@@ -124,16 +124,18 @@
   backdrop-filter: blur(4px);
 }
 
-/* Happy Clients: clean logo wall with no grid or implied interaction. */
+/* Happy Clients: compact, clean logo wall with no grid or implied interaction. */
 .logo-grid {
   border: 0;
   background: transparent;
-  column-gap: 18px;
-  row-gap: 22px;
+  column-gap: 10px;
+  row-gap: 12px;
 }
 
 .logo-card,
 .logo-card:hover {
+  min-height: 108px;
+  padding: 12px;
   border: 0;
   background: transparent;
   transition: none;
@@ -141,6 +143,7 @@
 
 .logo-card img,
 .logo-card:hover img {
+  max-height: 78px;
   transform: none;
   filter: none;
   transition: none;
