@@ -1,0 +1,46 @@
+name: Extract original Fast Cut Films logo colors
+
+on:
+  push:
+    paths:
+      - '.github/workflows/extract-original-logo-colors.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download logo and extract dominant opaque colors
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -L --fail --silent --show-error -A 'Mozilla/5.0' \
+            https://fastcutfilms.com/wp3/wp-content/uploads/fastcutfilms-logo2023-400px.png \
+            -o /tmp/fastcut-logo.png
+          python3 -m pip install --quiet pillow
+          python3 - <<'PY'
+          from PIL import Image
+          from collections import Counter
+          img = Image.open('/tmp/fastcut-logo.png').convert('RGBA')
+          counts = Counter()
+          for r,g,b,a in img.getdata():
+              if a >= 240 and not (r > 245 and g > 245 and b > 245):
+                  counts[(r,g,b)] += 1
+          colors = counts.most_common(12)
+          with open('original-logo-colors.txt','w') as f:
+              f.write('Dominant opaque colors in fastcutfilms-logo2023-400px.png\n')
+              for (r,g,b), count in colors:
+                  f.write(f'#{r:02X}{g:02X}{b:02X} {count}\n')
+          PY
+      - name: Commit exact color report
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add original-logo-colors.txt
+          git diff --cached --quiet || git commit -m 'Record exact original Fast Cut Films logo colors'
+          git push
