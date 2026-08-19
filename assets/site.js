@@ -16,6 +16,19 @@ if (brandText && brandBars) {
   window.addEventListener('resize', matchBrandWidth);
 }
 
+const heroBrand = document.querySelector('.hero-brand');
+const heroBars = document.querySelector('.hero-bars');
+const heroInner = document.querySelector('.hero-inner');
+if (heroBrand && heroBars && heroInner) {
+  const matchHeroWidth = () => {
+    const textWidth = heroBrand.getBoundingClientRect().width;
+    const availableWidth = heroInner.getBoundingClientRect().width;
+    heroBars.style.width = `${Math.min(textWidth, availableWidth)}px`;
+  };
+  matchHeroWidth();
+  window.addEventListener('resize', matchHeroWidth);
+}
+
 const storyCopy = document.querySelector('.experience-item.accent-green p');
 if (storyCopy) {
   storyCopy.innerHTML = storyCopy.innerHTML.replace(
