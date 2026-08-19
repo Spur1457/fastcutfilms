@@ -1,0 +1,118 @@
+name: Import local Fast Cut Films assets
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'fcf-assets.zip'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  import-assets:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Stop if bundle is not present
+        id: bundle
+        shell: bash
+        run: |
+          if [ -f fcf-assets.zip ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Unpack launch assets
+        if: steps.bundle.outputs.present == 'true'
+        shell: bash
+        run: |
+          unzip -o fcf-assets.zip -d .
+          test -f assets/images/hero.jpg
+          test -f assets/images/service-marketing.jpg
+          test -f assets/images/service-safety.jpg
+          test -f assets/images/service-community.jpg
+          test -f assets/images/experience-bg.webp
+          test -f assets/images/experience-desk.webp
+          test -f assets/images/clients/nasa.jpg
+          test -f assets/images/clients/exxonmobil.jpg
+          test -f assets/images/clients/conocophillips.jpg
+          count=$(find assets/images -type f | wc -l | tr -d ' ')
+          test "$count" -eq 26
+
+      - name: Replace WordPress image URLs with local assets
+        if: steps.bundle.outputs.present == 'true'
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          index = Path('index.html')
+          html = index.read_text()
+          replacements = {
+              'https://fastcutfilms.com/wp3/wp-content/uploads/fcf-c05800px.jpg': 'assets/images/service-marketing.jpg',
+              'https://fastcutfilms.com/wp3/wp-content/uploads/fcf-al03-800px.jpg': 'assets/images/service-safety.jpg',
+              'https://fastcutfilms.com/wp3/wp-content/uploads/BALLET-REHEARSAL1600-768x504-1.jpg': 'assets/images/service-community.jpg',
+              'https://fastcutfilms.com/wp3/wp-content/uploads/nasa-logo.jpg': 'assets/images/clients/nasa.jpg',
+              'https://fastcutfilms.com/wp3/wp-content/uploads/xom-logo.jpg': 'assets/images/clients/exxonmobil.jpg',
+              'https://fastcutfilms.com/wp3/wp-content/uploads/ConocoPhillips-Logo.jpg': 'assets/images/clients/conocophillips.jpg',
+              'https://fastcutfilms.com/wp3/wp-content/uploads/cl200px-10.png': 'assets/images/clients/client-10.png',
+              'https://fastcutfilms.com/wp3/wp-content/uploads/cl200px-7.png': 'assets/images/clients/client-7.png',
+              'https://fastcutfilms.com/wp3/wp-content/uploads/cl200px-1.png': 'assets/images/clients/client-1.png',
+              'https://fastcutfilms.com/wp3/wp-content/uploads/cl200px-19.png': 'assets/images/clients/client-19.png',
+              'https://fastcutfilms.com/wp3/wp-content/uploads/cl200px-8.png': 'assets/images/clients/client-8.png',
+              'https://fastcutfilms.com/wp3/wp-content/uploads/cl200px-17.png': 'assets/images/clients/client-17.png',
+              'https://fastcutfilms.com/wp3/wp-content/uploads/cl200px-15.png': 'assets/images/clients/client-15.png',
+              'https://fastcutfilms.com/wp3/wp-content/uploads/cl200px-14.png': 'assets/images/clients/client-14.png',
+              'https://fastcutfilms.com/wp3/wp-content/uploads/cl200px-13.png': 'assets/images/clients/client-13.png',
+              'https://fastcutfilms.com/wp3/wp-content/uploads/cl200px-12.png': 'assets/images/clients/client-12.png',
+              'https://fastcutfilms.com/wp3/wp-content/uploads/cl200px-9.png': 'assets/images/clients/client-9.png',
+              'https://fastcutfilms.com/wp3/wp-content/uploads/cl200px-22.png': 'assets/images/clients/client-22.png',
+              'https://fastcutfilms.com/wp3/wp-content/uploads/cl200px-20.png': 'assets/images/clients/client-20.png',
+              'https://fastcutfilms.com/wp3/wp-content/uploads/cl200px-21.png': 'assets/images/clients/client-21.png',
+              'https://fastcutfilms.com/wp3/wp-content/uploads/cl200px-6.png': 'assets/images/clients/client-6.png',
+              'https://fastcutfilms.com/wp3/wp-content/uploads/cl200px-24.png': 'assets/images/clients/client-24.png',
+              'https://fastcutfilms.com/wp3/wp-content/uploads/cl200px-23.png': 'assets/images/clients/client-23.png',
+          }
+          for old, new in replacements.items():
+              if old not in html:
+                  raise SystemExit(f'Missing expected HTML reference: {old}')
+              html = html.replace(old, new)
+          index.write_text(html)
+
+          css_path = Path('assets/original-backgrounds.css')
+          css = css_path.read_text()
+          css_replacements = {
+              "https://fastcutfilms.com/wp3/wp-content/uploads/fastcutfilms-header23.jpg": "images/hero.jpg",
+              "https://fastcutfilms.com/wp3/wp-content/uploads/Edit-studio-monitor-FastCutFilms-bg1.webp": "images/experience-bg.webp",
+              "https://fastcutfilms.com/wp3/wp-content/uploads/fastcutfilms-studio-edit-desk-alpha-500px.webp": "images/experience-desk.webp",
+          }
+          for old, new in css_replacements.items():
+              if old not in css:
+                  raise SystemExit(f'Missing expected CSS reference: {old}')
+              css = css.replace(old, new)
+          css_path.write_text(css)
+          PY
+
+          if grep -R "fastcutfilms.com/wp3/wp-content/uploads" index.html assets/original-backgrounds.css; then
+            echo "WordPress image dependency still present"
+            exit 1
+          fi
+
+      - name: Commit local assets and updated references
+        if: steps.bundle.outputs.present == 'true'
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/images index.html assets/original-backgrounds.css
+          if git diff --cached --quiet; then
+            echo "Nothing to commit"
+            exit 0
+          fi
+          git commit -m "Migrate WordPress image assets into site repo"
+          git push
