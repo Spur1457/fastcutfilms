@@ -1,0 +1,68 @@
+name: Inspect original Fast Cut Films assets
+
+on:
+  push:
+    paths:
+      - '.github/workflows/inspect-original-site.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch original homepage and CSS assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .original-scan
+          curl -L --fail --silent --show-error -A 'Mozilla/5.0' https://fastcutfilms.com/ -o .original-scan/home.html
+          python3 - <<'PY'
+          import re, html, urllib.parse, pathlib, subprocess
+          base='https://fastcutfilms.com/'
+          text=pathlib.Path('.original-scan/home.html').read_text(errors='ignore')
+          css=[]
+          for href in re.findall(r'<link[^>]+href=["\']([^"\']+\.css[^"\']*)["\']', text, flags=re.I):
+              href=html.unescape(href)
+              css.append(urllib.parse.urljoin(base, href))
+          out=[]
+          out.append('CSS FILES')
+          out.extend(css)
+          alltext=text
+          for i,url in enumerate(css):
+              try:
+                  p=f'.original-scan/css-{i}.css'
+                  subprocess.run(['curl','-L','--fail','--silent','--show-error','-A','Mozilla/5.0',url,'-o',p],check=True)
+                  alltext+='\n'+pathlib.Path(p).read_text(errors='ignore')
+              except Exception:
+                  pass
+          urls=[]
+          for u in re.findall(r'https?://[^\s\"\'\)]+', alltext):
+              u=html.unescape(u).rstrip(';,')
+              if 'fastcutfilms.com' in u and '/wp' in u and re.search(r'\.(?:jpg|jpeg|png|webp)(?:\?|$)',u,re.I):
+                  urls.append(u)
+          for u in re.findall(r'url\(([^)]+)\)', alltext, flags=re.I):
+              u=u.strip(' \"\'')
+              if not u or u.startswith('data:'):
+                  continue
+              u=urllib.parse.urljoin(base, html.unescape(u))
+              if 'fastcutfilms.com' in u and re.search(r'\.(?:jpg|jpeg|png|webp)(?:\?|$)',u,re.I):
+                  urls.append(u)
+          out.append('\nIMAGE/BACKGROUND URLS')
+          seen=set()
+          for u in urls:
+              if u not in seen:
+                  seen.add(u); out.append(u)
+          pathlib.Path('original-background-assets.txt').write_text('\n'.join(out)+'\n')
+          PY
+      - name: Commit scan results
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add original-background-assets.txt
+          git diff --cached --quiet || git commit -m 'Record original Fast Cut Films background assets'
+          git push
