@@ -1,5 +1,19 @@
 /* Original Fast Cut Films background treatments recreated from the WordPress site. */
 
+/* Keep the header wordmark and its three-color underline as one lockup. */
+.brand {
+  width: max-content;
+}
+
+.brand > span:first-child {
+  white-space: nowrap;
+}
+
+.brand-bars {
+  width: 100%;
+  align-self: stretch;
+}
+
 .hero {
   position: relative;
   min-height: 85vh;
