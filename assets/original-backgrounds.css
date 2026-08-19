@@ -188,4 +188,30 @@
     background-size: 200px auto;
     background-position: 52% 100%;
   }
+
+  .clients {
+    padding-top: 52px;
+    padding-bottom: 52px;
+  }
+
+  .clients .section-head {
+    margin-bottom: 26px;
+  }
+
+  .logo-grid {
+    grid-template-columns: repeat(4, 1fr);
+    column-gap: 8px;
+    row-gap: 10px;
+  }
+
+  .logo-card,
+  .logo-card:hover {
+    min-height: 76px;
+    padding: 7px;
+  }
+
+  .logo-card img,
+  .logo-card:hover img {
+    max-height: 52px;
+  }
 }
