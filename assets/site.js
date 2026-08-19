@@ -117,7 +117,7 @@ if (form && status) {
 
   const turnstileWrap = document.createElement('div');
   turnstileWrap.className = 'turnstile-wrap';
-  turnstileWrap.innerHTML = '<div class="cf-turnstile" data-sitekey="0x4AAAAAAEV78pDTzjhEQKUG" data-action="contact"></div>';
+  turnstileWrap.innerHTML = '<div class="cf-turnstile" data-sitekey="0x4AAAAAAEV78pDTzjhEQKUG" data-action="contact" data-appearance="interaction-only"></div>';
   sendButton?.before(turnstileWrap);
 
   if (!document.querySelector('script[data-turnstile-script]')) {
