@@ -93,6 +93,28 @@
   backdrop-filter: blur(4px);
 }
 
+/* Happy Clients: clean logo wall with no grid or implied interaction. */
+.logo-grid {
+  border: 0;
+  background: transparent;
+  column-gap: 18px;
+  row-gap: 22px;
+}
+
+.logo-card,
+.logo-card:hover {
+  border: 0;
+  background: transparent;
+  transition: none;
+}
+
+.logo-card img,
+.logo-card:hover img {
+  transform: none;
+  filter: none;
+  transition: none;
+}
+
 @media (max-width: 1024px) {
   .hero {
     background-position: 37% 47%;
