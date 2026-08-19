@@ -28,17 +28,17 @@ jobs:
           for href in re.findall(r'<link[^>]+href=["\']([^"\']+\.css[^"\']*)["\']', text, flags=re.I):
               href=html.unescape(href)
               css.append(urllib.parse.urljoin(base, href))
-          out=[]
-          out.append('CSS FILES')
-          out.extend(css)
-          alltext=text
+          out=['CSS FILES', *css]
+          sources=[('HOME HTML', text)]
           for i,url in enumerate(css):
               try:
                   p=f'.original-scan/css-{i}.css'
                   subprocess.run(['curl','-L','--fail','--silent','--show-error','-A','Mozilla/5.0',url,'-o',p],check=True)
-                  alltext+='\n'+pathlib.Path(p).read_text(errors='ignore')
+                  c=pathlib.Path(p).read_text(errors='ignore')
+                  sources.append((url,c))
               except Exception:
                   pass
+          alltext='\n'.join(s for _,s in sources)
           urls=[]
           for u in re.findall(r'https?://[^\s\"\'\)]+', alltext):
               u=html.unescape(u).rstrip(';,')
@@ -57,12 +57,30 @@ jobs:
               if u not in seen:
                   seen.add(u); out.append(u)
           pathlib.Path('original-background-assets.txt').write_text('\n'.join(out)+'\n')
+
+          needles=[
+            'Edit-studio-monitor-FastCutFilms-Commercial-Video-Houston-2.webp',
+            'fastcutfilms-header23.jpg',
+            'Edit-studio-monitor-FastCutFilms-bg1.webp',
+            'background-image'
+          ]
+          ctx=[]
+          for name,src in sources:
+              for needle in needles:
+                  start=0
+                  while True:
+                      idx=src.find(needle,start)
+                      if idx < 0: break
+                      a=max(0,idx-700); b=min(len(src),idx+len(needle)+700)
+                      ctx.append(f'\n=== {name} :: {needle} ===\n'+src[a:b].replace('><','>\n<'))
+                      start=idx+len(needle)
+          pathlib.Path('original-background-context.txt').write_text('\n'.join(ctx)+'\n')
           PY
       - name: Commit scan results
         shell: bash
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add original-background-assets.txt
-          git diff --cached --quiet || git commit -m 'Record original Fast Cut Films background assets'
+          git add original-background-assets.txt original-background-context.txt
+          git diff --cached --quiet || git commit -m 'Record original Fast Cut Films background context'
           git push
