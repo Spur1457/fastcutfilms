@@ -5,6 +5,14 @@ if (toggle && nav) {
   nav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => nav.classList.remove('open')));
 }
 
+const storyCopy = document.querySelector('.experience-item.accent-green p');
+if (storyCopy) {
+  storyCopy.innerHTML = storyCopy.innerHTML.replace(
+    'motion graphics, web design all at Fast Cut Films.',
+    'motion graphics, web design all at<br><span style="white-space: nowrap;">Fast Cut Films.</span>'
+  );
+}
+
 const form = document.querySelector('#contact-form');
 const status = document.querySelector('#form-status');
 if (form && status) {
@@ -14,4 +22,5 @@ if (form && status) {
   });
 }
 
-document.querySelector('#year').textContent = new Date().getFullYear();
+const year = document.querySelector('#year');
+if (year) year.textContent = new Date().getFullYear();
