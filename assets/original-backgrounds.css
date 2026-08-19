@@ -190,6 +190,7 @@
   }
 
   .clients {
+    scroll-margin-top: 92px;
     padding-top: 52px;
     padding-bottom: 52px;
   }
