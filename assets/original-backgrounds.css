@@ -1,0 +1,135 @@
+/* Original Fast Cut Films background treatments recreated from the WordPress site. */
+
+.hero {
+  position: relative;
+  min-height: 85vh;
+  overflow: hidden;
+  background-image: url('https://fastcutfilms.com/wp3/wp-content/uploads/fastcutfilms-header23.jpg');
+  background-size: cover;
+  background-position: 52% 50%;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  border-bottom: 0;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(26, 32, 44, .40);
+  pointer-events: none;
+}
+
+.hero-inner {
+  position: relative;
+  z-index: 1;
+  padding-top: 88px;
+  padding-bottom: 96px;
+}
+
+.hero-intro,
+.hero-brand,
+.hero h1 {
+  color: #fff;
+  text-shadow: 0 2px 18px rgba(0,0,0,.24);
+}
+
+.hero-intro {
+  color: rgba(255,255,255,.94);
+}
+
+/* The original site uses this edit-suite image as another full-width background,
+   with the transparent edit-desk artwork laid over the bottom. */
+.experience {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background-image: url('https://fastcutfilms.com/wp3/wp-content/uploads/Edit-studio-monitor-FastCutFilms-bg1.webp');
+  background-size: cover;
+  background-position: 50% 50%;
+  background-attachment: scroll;
+  background-repeat: no-repeat;
+  border-top: 0;
+  border-bottom: 0;
+  padding-bottom: 250px;
+}
+
+.experience::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background: rgba(255,255,255,.34);
+}
+
+.experience::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 48%;
+  z-index: -1;
+  pointer-events: none;
+  background-image: url('https://fastcutfilms.com/wp3/wp-content/uploads/fastcutfilms-studio-edit-desk-alpha-500px.webp');
+  background-size: min(50vw, 600px) auto;
+  background-position: 50% 100%;
+  background-repeat: no-repeat;
+}
+
+.experience .section-head,
+.experience .experience-grid {
+  position: relative;
+  z-index: 1;
+}
+
+.experience .section-head h2 {
+  color: #22272c;
+  text-shadow: 0 1px 0 rgba(255,255,255,.35);
+}
+
+.experience-item {
+  background: rgba(255,255,255,.94);
+  backdrop-filter: blur(4px);
+}
+
+@media (max-width: 1024px) {
+  .hero {
+    background-position: 37% 47%;
+    background-attachment: scroll;
+  }
+
+  .experience {
+    background-position: 50% 100%;
+    padding-bottom: 220px;
+  }
+
+  .experience::after {
+    background-size: 500px auto;
+  }
+}
+
+@media (max-width: 767px) {
+  .hero {
+    min-height: 75vh;
+    background-position: 45% 66%;
+    background-attachment: scroll;
+  }
+
+  .hero-inner {
+    padding-top: 64px;
+    padding-bottom: 70px;
+  }
+
+  .experience {
+    min-height: 60vh;
+    background-position: 52% 50%;
+    padding-bottom: 150px;
+  }
+
+  .experience::after {
+    height: 220px;
+    background-size: 200px auto;
+    background-position: 52% 100%;
+  }
+}
