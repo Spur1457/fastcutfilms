@@ -25,7 +25,7 @@
   position: relative;
   min-height: 85vh;
   overflow: hidden;
-  background-image: url('https://fastcutfilms.com/wp3/wp-content/uploads/fastcutfilms-header23.jpg');
+  background-image: url('images/hero.jpg');
   background-size: cover;
   background-position: 52% 50%;
   background-attachment: fixed;
@@ -75,7 +75,7 @@
   position: relative;
   overflow: hidden;
   isolation: isolate;
-  background-image: url('https://fastcutfilms.com/wp3/wp-content/uploads/Edit-studio-monitor-FastCutFilms-bg1.webp');
+  background-image: url('images/experience-bg.webp');
   background-size: cover;
   background-position: 50% 50%;
   background-attachment: scroll;
@@ -102,7 +102,7 @@
   height: 48%;
   z-index: -1;
   pointer-events: none;
-  background-image: url('https://fastcutfilms.com/wp3/wp-content/uploads/fastcutfilms-studio-edit-desk-alpha-500px.webp');
+  background-image: url('images/experience-desk.webp');
   background-size: min(50vw, 600px) auto;
   background-position: 50% 100%;
   background-repeat: no-repeat;
